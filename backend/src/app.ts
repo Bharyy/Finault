@@ -8,7 +8,6 @@ import { errorHandler } from './middleware/errorHandler';
 
 import { setupSwagger } from './config/swagger';
 
-// Route imports
 import authRoutes from './modules/auth/auth.routes';
 import userRoutes from './modules/users/users.routes';
 import transactionRoutes from './modules/transactions/transactions.routes';
@@ -18,7 +17,6 @@ import smsLedgerRoutes from './modules/sms-ledger/sms-ledger.routes';
 
 const app = express();
 
-// Security & parsing middleware
 app.use(helmet());
 app.use(cors({
   origin: env.FRONTEND_URL,
@@ -30,15 +28,12 @@ app.use(express.json({ limit: '10kb' }));
 app.use(requestLogger);
 app.use(globalLimiter);
 
-// Swagger API docs
 setupSwagger(app);
 
-// Health check
 app.get('/api/health', (_req, res) => {
   res.json({ success: true, data: { status: 'healthy', timestamp: new Date().toISOString() } });
 });
 
-// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
@@ -46,7 +41,6 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/anomalies', anomalyRoutes);
 app.use('/api/sms-ledger', smsLedgerRoutes);
 
-// 404 handler
 app.use((_req, res) => {
   res.status(404).json({
     success: false,
@@ -54,7 +48,6 @@ app.use((_req, res) => {
   });
 });
 
-// Global error handler (must be last)
 app.use(errorHandler);
 
 export default app;

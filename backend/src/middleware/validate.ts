@@ -17,9 +17,7 @@ export function validate(schema: ZodSchema, source: RequestSource = 'body') {
       throw ApiError.badRequest('Validation failed', errors);
     }
 
-    // Replace with parsed & transformed data
     if (source === 'query') {
-      // req.query is read-only in newer Express — mutate in place
       const q = req.query;
       for (const key of Object.keys(q)) delete q[key];
       Object.assign(q, result.data);

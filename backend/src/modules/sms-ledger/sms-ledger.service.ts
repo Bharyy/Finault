@@ -9,7 +9,6 @@ export class SmsLedgerService {
   async processWebhook(data: SmsWebhookInput, userId: string) {
     const parseResult = parseSms(data.message);
 
-    // Create SMS log entry
     const smsLog = await prisma.smsLog.create({
       data: {
         rawMessage: data.message,
@@ -20,7 +19,6 @@ export class SmsLedgerService {
       },
     });
 
-    // If we could extract at least amount and type, create a transaction
     if (parseResult.data.amount && parseResult.data.type) {
       const transaction = await prisma.transaction.create({
         data: {
@@ -39,13 +37,11 @@ export class SmsLedgerService {
         },
       });
 
-      // Run anomaly detection
       const anomalies = await anomalyService.analyzeTransaction(transaction.id).catch((err) => {
         console.error('Anomaly detection failed for SMS transaction:', err);
         return [];
       });
 
-      // Emit real-time events
       try {
         const { getIO } = await import('../../config/socket');
         const io = getIO();

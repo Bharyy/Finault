@@ -7,7 +7,6 @@ import { createUserSchema, updateUserSchema, userQuerySchema } from './users.val
 
 const router = Router();
 
-// All user routes require admin
 router.use(authenticate);
 router.use(authorize('ADMIN'));
 

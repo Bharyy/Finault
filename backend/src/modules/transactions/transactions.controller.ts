@@ -24,14 +24,10 @@ export class TransactionsController {
   async create(req: Request, res: Response) {
     const transaction = await transactionsService.create(req.body, req.user!.userId);
 
-    // Emit real-time event
     try {
       const { getIO } = await import('../../config/socket');
-      const io = getIO();
-      io.emit('transaction:created', transaction);
-    } catch {
-      // Socket not initialized (e.g., in tests)
-    }
+      getIO().emit('transaction:created', transaction);
+    } catch {}
 
     sendSuccess(res, transaction, 201);
   }
@@ -45,11 +41,8 @@ export class TransactionsController {
 
     try {
       const { getIO } = await import('../../config/socket');
-      const io = getIO();
-      io.emit('transaction:updated', transaction);
-    } catch {
-      // Socket not initialized
-    }
+      getIO().emit('transaction:updated', transaction);
+    } catch {}
 
     sendSuccess(res, transaction);
   }
@@ -59,11 +52,8 @@ export class TransactionsController {
 
     try {
       const { getIO } = await import('../../config/socket');
-      const io = getIO();
-      io.emit('transaction:deleted', { id: req.params.id });
-    } catch {
-      // Socket not initialized
-    }
+      getIO().emit('transaction:deleted', { id: req.params.id });
+    } catch {}
 
     sendSuccess(res, result);
   }

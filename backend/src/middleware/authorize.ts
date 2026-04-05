@@ -4,7 +4,6 @@ import { hasMinRole, Permission, hasPermission } from '../shared/constants/roles
 import { ApiError } from '../shared/utils/apiError';
 import { prisma } from '../config/database';
 
-// In-memory cache for active status checks (userId -> { isActive, cachedAt })
 const activeStatusCache = new Map<string, { isActive: boolean; cachedAt: number }>();
 const CACHE_TTL = 60_000; // 60 seconds
 

@@ -38,7 +38,6 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
     const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as JwtPayload;
     req.user = { userId: decoded.userId, role: decoded.role };
   } catch {
-    // Silently ignore invalid tokens for optional auth
   }
 
   next();

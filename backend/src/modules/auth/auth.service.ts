@@ -31,7 +31,6 @@ export class AuthService {
       throw ApiError.conflict('Email already registered');
     }
 
-    // First user becomes ADMIN
     const userCount = await prisma.user.count();
     const role = userCount === 0 ? 'ADMIN' : 'VIEWER';
 
@@ -68,7 +67,6 @@ export class AuthService {
       throw ApiError.unauthorized('Invalid email or password');
     }
 
-    // Check account lockout
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       const remainingMs = user.lockedUntil.getTime() - Date.now();
       const remainingMins = Math.ceil(remainingMs / 60000);
@@ -84,7 +82,6 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
 
     if (!isPasswordValid) {
-      // Increment failed attempts
       const failedAttempts = user.failedAttempts + 1;
       const updateData: { failedAttempts: number; lockedUntil?: Date } = { failedAttempts };
 
@@ -100,7 +97,6 @@ export class AuthService {
       throw ApiError.unauthorized('Invalid email or password');
     }
 
-    // Reset failed attempts on successful login
     if (user.failedAttempts > 0) {
       await prisma.user.update({
         where: { id: user.id },
@@ -132,8 +128,6 @@ export class AuthService {
     });
 
     if (!storedToken) {
-      // Possible token reuse attack — invalidate all tokens for the user
-      // We can't identify the user here, so just reject
       throw ApiError.unauthorized('Invalid refresh token — possible token reuse detected');
     }
 
@@ -146,7 +140,6 @@ export class AuthService {
       throw ApiError.forbidden('Account is deactivated');
     }
 
-    // Rotate: delete old token, create new pair
     await prisma.refreshToken.delete({ where: { id: storedToken.id } });
 
     const tokens = await this.generateTokenPair(storedToken.userId, storedToken.user.role);
@@ -196,7 +189,6 @@ export class AuthService {
     const refreshToken = generateRefreshToken();
     const hashedRefreshToken = hashToken(refreshToken);
 
-    // Parse refresh expiry to milliseconds
     const expiryMatch = env.JWT_REFRESH_EXPIRY.match(/^(\d+)([dhms])$/);
     let expiryMs = 7 * 24 * 60 * 60 * 1000; // default 7 days
     if (expiryMatch) {

@@ -12,23 +12,18 @@ export class AnomalyService {
 
     if (!transaction || transaction.deletedAt) return [];
 
-    // Clear existing unresolved anomalies for this transaction (in case of re-analysis)
     await prisma.anomaly.deleteMany({
       where: { transactionId, isResolved: false },
     });
 
-    const anomalies: AnomalyResult[] = [];
-
-    // Run all three strategies in parallel
     const [spikeResults, duplicateResults, frequencyResults] = await Promise.all([
       this.detectCategorySpike(transaction),
       this.detectDuplicates(transaction),
       this.detectUnusualFrequency(transaction),
     ]);
 
-    anomalies.push(...spikeResults, ...duplicateResults, ...frequencyResults);
+    const anomalies = [...spikeResults, ...duplicateResults, ...frequencyResults];
 
-    // Persist anomalies
     if (anomalies.length > 0) {
       await prisma.anomaly.createMany({
         data: anomalies.map((a) => ({
@@ -40,7 +35,6 @@ export class AnomalyService {
         })),
       });
 
-      // Emit real-time event
       try {
         const { getIO } = await import('../../config/socket');
         const io = getIO();
@@ -52,18 +46,13 @@ export class AnomalyService {
             severity: a.severity,
           })),
         });
-      } catch {
-        // Socket not initialized
-      }
+      } catch {}
     }
 
     return anomalies;
   }
 
-  /**
-   * Strategy 1: Category Spike Detection
-   * Flags transactions where the amount exceeds avg + 2*stddev for the category
-   */
+  /** Flags transactions where amount exceeds avg + 2*stddev for the category */
   private async detectCategorySpike(
     transaction: { id: string; amount: Prisma.Decimal; type: string; category: string }
   ): Promise<AnomalyResult[]> {
@@ -109,14 +98,11 @@ export class AnomalyService {
     return [];
   }
 
-  /**
-   * Strategy 2: Duplicate Detection
-   * Flags transactions with same amount, category, and type within 5 minutes
-   */
+  /** Flags transactions with same amount, category, and type within a 5-minute window */
   private async detectDuplicates(
     transaction: { id: string; amount: Prisma.Decimal; type: string; category: string; createdAt: Date }
   ): Promise<AnomalyResult[]> {
-    const windowMs = 5 * 60 * 1000; // 5 minutes
+    const windowMs = 5 * 60 * 1000;
     const windowStart = new Date(transaction.createdAt.getTime() - windowMs);
     const windowEnd = new Date(transaction.createdAt.getTime() + windowMs);
 
@@ -147,10 +133,7 @@ export class AnomalyService {
     });
   }
 
-  /**
-   * Strategy 3: Unusual Frequency Detection
-   * Flags when daily transaction count in a category exceeds 3x the 30-day average
-   */
+  /** Flags when daily transaction count in a category exceeds 3x the 30-day average */
   private async detectUnusualFrequency(
     transaction: { id: string; category: string; date: Date }
   ): Promise<AnomalyResult[]> {
@@ -162,7 +145,6 @@ export class AnomalyService {
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // Count today's transactions in this category
     const todayCount = await prisma.transaction.count({
       where: {
         category: transaction.category,
@@ -171,7 +153,6 @@ export class AnomalyService {
       },
     });
 
-    // Get average daily count over last 30 days
     const dailyAvgResult: Array<{ avg: number }> = await prisma.$queryRaw`
       SELECT AVG(daily_count)::float as avg FROM (
         SELECT COUNT(*)::float as daily_count
@@ -258,12 +239,10 @@ export class AnomalyService {
       throw ApiError.notFound('Anomaly not found');
     }
 
-    const updated = await prisma.anomaly.update({
+    return prisma.anomaly.update({
       where: { id },
       data: { isResolved: true },
     });
-
-    return updated;
   }
 }
 

@@ -15,7 +15,6 @@ export function initializeSocket(server: HttpServer): Server {
     },
   });
 
-  // JWT authentication middleware for Socket.io
   io.use((socket, next) => {
     const token = socket.handshake.auth.token;
 
@@ -36,9 +35,7 @@ export function initializeSocket(server: HttpServer): Server {
     const user = socket.data.user as JwtPayload;
     console.log(`Socket connected: ${user.userId} (${user.role})`);
 
-    // Join user-specific room
     socket.join(`user:${user.userId}`);
-    // Join role-based room
     socket.join(`role:${user.role}`);
 
     socket.on('disconnect', () => {

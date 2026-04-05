@@ -18,18 +18,15 @@ export interface ParseResult {
   errorReason: string | null;
 }
 
-// Step 1: Determine transaction type from keywords
 const EXPENSE_KEYWORDS = /\b(debited|spent|withdrawn|paid|purchase|payment|debit|sent)\b/i;
 const INCOME_KEYWORDS = /\b(credited|received|refund|cashback|credit|deposited)\b/i;
 
-// Step 2: Extract amount — handles Rs., Rs, INR with optional commas and decimals
 const AMOUNT_PATTERNS = [
   /(?:Rs\.?\s?|INR\.?\s?|₹\s?)([\d,]+(?:\.\d{1,2})?)/i,
   /(?:amount|amt)(?:\s+(?:of|is))?\s*(?:Rs\.?\s?|INR\.?\s?|₹\s?)?([\d,]+(?:\.\d{1,2})?)/i,
   /([\d,]+(?:\.\d{2})?)\s*(?:Rs\.?|INR)/i,
 ];
 
-// Step 3: Extract date — multiple formats
 const DATE_PATTERNS = [
   /(\d{1,2})[-\/](Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[-\/](\d{2,4})/i,
   /(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})/,
@@ -41,17 +38,14 @@ const MONTH_MAP: Record<string, number> = {
   jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
 };
 
-// Step 4: Extract merchant
 const MERCHANT_PATTERNS = [
   /(?:to|at|from|towards)\s+(?:UPI[\/\-])?([A-Za-z0-9\s.&']+?)(?:\s+on|\s*\.|\s+via|\s+Ref|\s+UPI|\s*$)/i,
   /(?:VPA|UPI)\s+([a-zA-Z0-9@.\-]+)/i,
   /(?:Info:\s*)([A-Za-z0-9\s.&']+?)(?:\s*$|\s+Avl)/i,
 ];
 
-// Step 5: Extract reference ID
 const REF_PATTERN = /(?:Ref\.?\s*(?:No\.?\s*)?:?\s*|UPI\s*Ref:?\s*)(\d{6,})/i;
 
-// Step 6: Extract balance
 const BALANCE_PATTERNS = [
   /(?:Bal|Balance|Avl\s*Bal|Available\s*Bal)(?:ance)?[:\s]*(?:Rs\.?\s?|INR\.?\s?|₹\s?)([\d,]+(?:\.\d{1,2})?)/i,
 ];

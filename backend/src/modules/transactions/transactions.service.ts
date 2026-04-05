@@ -26,7 +26,6 @@ export class TransactionsService {
       deletedAt: null,
     };
 
-    // Non-admin users can only see their own transactions
     if (userRole !== 'ADMIN') {
       where.userId = userId;
     }
@@ -53,7 +52,6 @@ export class TransactionsService {
       where.notes = { contains: query.search, mode: 'insensitive' };
     }
 
-    // Build sort
     const sortBy = query.sortBy || 'date';
     const sortOrder = query.sortOrder || 'desc';
     const orderBy: Prisma.TransactionOrderByWithRelationInput = {
@@ -124,7 +122,6 @@ export class TransactionsService {
       },
     });
 
-    // Anomaly detection runs asynchronously (imported lazily to avoid circular deps)
     this.runAnomalyDetection(transaction.id).catch((err) =>
       console.error('Anomaly detection failed:', err)
     );
@@ -156,7 +153,6 @@ export class TransactionsService {
       },
     });
 
-    // Re-run anomaly detection
     this.runAnomalyDetection(transaction.id).catch((err) =>
       console.error('Anomaly detection failed:', err)
     );
@@ -178,7 +174,6 @@ export class TransactionsService {
       data: { deletedAt: new Date() },
     });
 
-    // Resolve associated anomalies
     await prisma.anomaly.updateMany({
       where: { transactionId: id },
       data: { isResolved: true },

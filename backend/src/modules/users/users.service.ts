@@ -128,7 +128,6 @@ export class UsersService {
       throw ApiError.notFound('User not found');
     }
 
-    // Prevent demoting the last admin
     if (data.role && data.role !== 'ADMIN' && user.role === 'ADMIN') {
       const adminCount = await prisma.user.count({
         where: { role: 'ADMIN', deletedAt: null, isActive: true },
@@ -138,7 +137,6 @@ export class UsersService {
       }
     }
 
-    // Prevent deactivating the last admin
     if (data.isActive === false && user.role === 'ADMIN') {
       const activeAdminCount = await prisma.user.count({
         where: { role: 'ADMIN', deletedAt: null, isActive: true },
@@ -162,7 +160,6 @@ export class UsersService {
       },
     });
 
-    // Clear cached active status
     clearActiveStatusCache(id);
 
     return updated;
@@ -181,7 +178,6 @@ export class UsersService {
       throw ApiError.notFound('User not found');
     }
 
-    // Prevent deleting the last admin
     if (user.role === 'ADMIN') {
       const adminCount = await prisma.user.count({
         where: { role: 'ADMIN', deletedAt: null },
@@ -196,7 +192,6 @@ export class UsersService {
       data: { deletedAt: new Date(), isActive: false },
     });
 
-    // Invalidate all refresh tokens for this user
     await prisma.refreshToken.deleteMany({ where: { userId: id } });
 
     clearActiveStatusCache(id);

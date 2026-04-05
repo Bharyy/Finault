@@ -8,7 +8,6 @@ interface DashboardContext {
 }
 
 function userFilter(ctx: DashboardContext): Prisma.TransactionWhereInput {
-  // Admins see org-wide data; others see only their own
   if (ctx.role === 'ADMIN') return {};
   return { userId: ctx.userId };
 }
@@ -70,7 +69,6 @@ export class DashboardService {
       _count: { id: true },
     });
 
-    // Organize by category
     const categories: Record<string, { income: number; expense: number; net: number; count: number }> = {};
 
     for (const row of result) {
@@ -86,12 +84,10 @@ export class DashboardService {
       }
     }
 
-    // Calculate net
     for (const cat of Object.values(categories)) {
       cat.net = cat.income - cat.expense;
     }
 
-    // Convert to sorted array
     const sorted = Object.entries(categories)
       .map(([category, data]) => ({ category, ...data }))
       .sort((a, b) => (b.income + b.expense) - (a.income + a.expense));
@@ -104,7 +100,6 @@ export class DashboardService {
 
     const truncFn = granularity === 'weekly' ? 'week' : 'month';
 
-    // Build user filter for raw SQL
     const userClause = ctx.role !== 'ADMIN'
       ? Prisma.sql`AND user_id = ${ctx.userId}`
       : Prisma.empty;
@@ -125,7 +120,6 @@ export class DashboardService {
         ORDER BY period ASC
       `;
 
-    // Organize by period
     const trendsMap = new Map<string, { period: string; income: number; expense: number; net: number }>();
 
     for (const row of result) {

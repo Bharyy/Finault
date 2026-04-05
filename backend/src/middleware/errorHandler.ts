@@ -3,12 +3,10 @@ import { ApiError } from '../shared/utils/apiError';
 import { env } from '../config/env';
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
-  // Already sent response
   if (res.headersSent) {
     return;
   }
 
-  // Custom API errors
   if (err instanceof ApiError) {
     const errorBody: Record<string, unknown> = {
       code: err.code,
@@ -22,7 +20,6 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     });
   }
 
-  // Prisma known errors
   if (err.constructor.name === 'PrismaClientKnownRequestError') {
     const prismaErr = err as unknown as { code: string; meta?: { target?: string[] } };
 
@@ -48,7 +45,6 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     }
   }
 
-  // Prisma validation errors
   if (err.constructor.name === 'PrismaClientValidationError') {
     return res.status(400).json({
       success: false,
@@ -59,7 +55,6 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     });
   }
 
-  // Zod validation errors
   if (err.name === 'ZodError') {
     return res.status(400).json({
       success: false,
@@ -71,7 +66,6 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     });
   }
 
-  // JWT errors
   if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
     return res.status(401).json({
       success: false,
@@ -82,7 +76,6 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     });
   }
 
-  // Unknown errors
   console.error('Unhandled error:', err);
 
   const errorBody: Record<string, unknown> = {
