@@ -6,7 +6,7 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Zorvyn Finance Dashboard API',
+      title: 'Finault API',
       version: '1.0.0',
       description:
         'A comprehensive finance dashboard backend with RBAC, anomaly detection, and SMS auto-ledger. Built with Express, TypeScript, Prisma, and PostgreSQL.',
@@ -398,7 +398,7 @@ const swaggerSpec = swaggerJsdoc(options);
 export function setupSwagger(app: Express) {
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Zorvyn Finance API Docs',
+    customSiteTitle: 'Finault API Docs',
   }));
 
   // Raw JSON spec endpoint
