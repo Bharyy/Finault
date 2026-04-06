@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import Header from '../components/layout/Header';
-import { usersApi, type UserWithCount, type CreateUserData } from '../api/users.api';
-import { formatDate } from '../lib/utils';
+import Header from '@/components/layout/Header';
+import { usersApi, type UserWithCount, type CreateUserData } from '@/api/users.api';
+import { formatDate } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Plus, Trash2, X, Search } from 'lucide-react';
 
 export default function UsersPage() {
@@ -81,51 +84,48 @@ export default function UsersPage() {
       <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+            <Input
               type="text"
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
+              className="pl-9"
             />
           </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="ml-auto flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
-          >
+          <Button onClick={() => setShowForm(true)} className="ml-auto">
             <Plus className="w-4 h-4" /> Add User
-          </button>
+          </Button>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-surface-secondary border-b border-border">
               <tr>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Role</th>
-                <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="text-center px-4 py-3 text-xs font-medium text-gray-500 uppercase">Txns</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Created</th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-text-muted uppercase">Name</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-text-muted uppercase">Email</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-text-muted uppercase">Role</th>
+                <th className="text-center px-4 py-3 text-xs font-medium text-text-muted uppercase">Status</th>
+                <th className="text-center px-4 py-3 text-xs font-medium text-text-muted uppercase">Txns</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-text-muted uppercase">Created</th>
+                <th className="px-4 py-3 text-xs font-medium text-text-muted uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border-light">
               {loading ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-500">Loading...</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-text-muted">Loading...</td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-500">No users found</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-text-muted">No users found</td></tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{u.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{u.email}</td>
+                  <tr key={u.id} className="hover:bg-surface-secondary/50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-medium text-text">{u.name}</td>
+                    <td className="px-4 py-3 text-sm text-text-secondary">{u.email}</td>
                     <td className="px-4 py-3">
                       <select
                         value={u.role}
                         onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                        className="text-xs px-2 py-1 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                        className="text-xs px-2 py-1 border border-border bg-surface rounded-lg focus:ring-2 focus:ring-primary/50 outline-none text-text"
                       >
                         <option value="VIEWER">VIEWER</option>
                         <option value="ANALYST">ANALYST</option>
@@ -135,19 +135,19 @@ export default function UsersPage() {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => handleToggleActive(u.id, u.isActive)}
-                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
-                          u.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+                          u.isActive ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-500/10 text-zinc-500'
                         }`}
                       >
                         {u.isActive ? 'Active' : 'Inactive'}
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-gray-500">{u.transactionCount}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{formatDate(u.createdAt)}</td>
+                    <td className="px-4 py-3 text-sm text-center text-text-muted">{u.transactionCount}</td>
+                    <td className="px-4 py-3 text-sm text-text-muted">{formatDate(u.createdAt)}</td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleDelete(u.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                        className="p-1.5 text-text-muted hover:text-red-500 hover:bg-red-500/10 rounded transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -160,55 +160,51 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Create User Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-5 border-b">
-              <h3 className="text-lg font-semibold">Create User</h3>
-              <button onClick={() => setShowForm(false)} className="p-1 hover:bg-gray-100 rounded">
-                <X className="w-5 h-5" />
+        <div className="fixed inset-0 bg-overlay flex items-center justify-center z-50 p-4">
+          <div className="bg-surface rounded-xl shadow-xl border border-border w-full max-w-md">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <h3 className="text-lg font-semibold text-text">Create User</h3>
+              <button onClick={() => setShowForm(false)} className="p-1 hover:bg-surface-elevated rounded cursor-pointer">
+                <X className="w-5 h-5 text-text-secondary" />
               </button>
             </div>
             <form onSubmit={handleCreate} className="p-5 space-y-4">
-              {formError && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{formError}</div>}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input
+              {formError && <div className="p-3 bg-danger/10 border border-danger/20 rounded-lg text-sm text-danger">{formError}</div>}
+              <div className="grid gap-2">
+                <Label>Name</Label>
+                <Input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
+              <div className="grid gap-2">
+                <Label>Email</Label>
+                <Input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
+              <div className="grid gap-2">
+                <Label>Password</Label>
+                <Input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
                   required
                 />
-                <p className="text-xs text-gray-400 mt-1">Min 8 chars, uppercase, number, special char</p>
+                <p className="text-xs text-text-muted">Min 8 chars, uppercase, number, special char</p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <div className="grid gap-2">
+                <Label>Role</Label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as CreateUserData['role'] })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
+                  className="h-10 px-3 border border-border bg-surface rounded-lg text-sm text-text focus:ring-2 focus:ring-primary/50 outline-none"
                 >
                   <option value="VIEWER">Viewer</option>
                   <option value="ANALYST">Analyst</option>
@@ -216,12 +212,12 @@ export default function UsersPage() {
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                <Button variant="outline" type="button" onClick={() => setShowForm(false)} className="flex-1">
                   Cancel
-                </button>
-                <button type="submit" className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark">
+                </Button>
+                <Button type="submit" className="flex-1">
                   Create
-                </button>
+                </Button>
               </div>
             </form>
           </div>

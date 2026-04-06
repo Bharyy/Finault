@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, Wallet, ArrowRightLeft } from 'lucide-react';
-import { formatCurrency } from '../../lib/utils';
+import { formatCurrency } from '@/lib/utils';
 
 interface Props {
   totalIncome: number;
@@ -14,33 +14,33 @@ export default function SummaryCards({ totalIncome, totalExpenses, netBalance, t
       title: 'Total Income',
       value: formatCurrency(totalIncome),
       icon: TrendingUp,
-      color: 'text-green-600',
-      bg: 'bg-green-50',
-      border: 'border-green-200',
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+      border: 'border-emerald-500/20',
     },
     {
       title: 'Total Expenses',
       value: formatCurrency(totalExpenses),
       icon: TrendingDown,
-      color: 'text-red-600',
-      bg: 'bg-red-50',
-      border: 'border-red-200',
+      color: 'text-red-500',
+      bg: 'bg-red-500/10',
+      border: 'border-red-500/20',
     },
     {
       title: 'Net Balance',
       value: formatCurrency(netBalance),
       icon: Wallet,
-      color: netBalance >= 0 ? 'text-blue-600' : 'text-red-600',
-      bg: netBalance >= 0 ? 'bg-blue-50' : 'bg-red-50',
-      border: netBalance >= 0 ? 'border-blue-200' : 'border-red-200',
+      color: netBalance >= 0 ? 'text-blue-500' : 'text-red-500',
+      bg: netBalance >= 0 ? 'bg-blue-500/10' : 'bg-red-500/10',
+      border: netBalance >= 0 ? 'border-blue-500/20' : 'border-red-500/20',
     },
     {
       title: 'Transactions',
       value: totalTransactions.toString(),
       icon: ArrowRightLeft,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
-      border: 'border-purple-200',
+      color: 'text-purple-500',
+      bg: 'bg-purple-500/10',
+      border: 'border-purple-500/20',
     },
   ];
 
@@ -49,10 +49,10 @@ export default function SummaryCards({ totalIncome, totalExpenses, netBalance, t
       {cards.map((card) => (
         <div
           key={card.title}
-          className={`bg-white rounded-xl border ${card.border} p-5 shadow-sm`}
+          className={`bg-surface rounded-xl border ${card.border} p-5 shadow-sm`}
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-gray-500">{card.title}</span>
+            <span className="text-sm font-medium text-text-secondary">{card.title}</span>
             <div className={`p-2 rounded-lg ${card.bg}`}>
               <card.icon className={`w-4 h-4 ${card.color}`} />
             </div>

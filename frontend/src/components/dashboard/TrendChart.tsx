@@ -1,5 +1,5 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import type { TrendPoint } from '../../api/dashboard.api';
+import type { TrendPoint } from '@/api/dashboard.api';
 
 export default function TrendChart({ data }: { data: TrendPoint[] }) {
   const formatted = data.map((d) => ({
@@ -8,8 +8,8 @@ export default function TrendChart({ data }: { data: TrendPoint[] }) {
   }));
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Income vs Expenses Trend</h3>
+    <div className="bg-surface rounded-xl border border-border p-5 shadow-sm">
+      <h3 className="text-lg font-semibold text-text mb-4">Income vs Expenses Trend</h3>
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={formatted}>
@@ -23,14 +23,14 @@ export default function TrendChart({ data }: { data: TrendPoint[] }) {
                 <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="period" fontSize={12} tickLine={false} />
-            <YAxis fontSize={12} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+            <XAxis dataKey="period" fontSize={12} tickLine={false} stroke="var(--color-text-muted)" />
+            <YAxis fontSize={12} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} stroke="var(--color-text-muted)" />
             <Tooltip
-              formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, '']}
-              contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
+              formatter={(value) => [`₹${Number(value).toLocaleString('en-IN')}`, '']}
+              contentStyle={{ borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', color: 'var(--color-text)' }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ color: 'var(--color-text-secondary)' }} />
             <Area type="monotone" dataKey="income" stroke="#22c55e" fill="url(#incomeGrad)" strokeWidth={2} name="Income" />
             <Area type="monotone" dataKey="expense" stroke="#ef4444" fill="url(#expenseGrad)" strokeWidth={2} name="Expenses" />
           </AreaChart>

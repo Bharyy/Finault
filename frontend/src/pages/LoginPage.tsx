@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Shield } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { ShineBorder } from '@/components/magicui/shine-border';
+import { InteractiveGridPattern } from '@/components/magicui/interactive-grid-pattern';
+import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggler';
 
 export default function LoginPage() {
   const { user, login, register, loading } = useAuth();
@@ -14,7 +22,7 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-surface-secondary">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -58,97 +66,115 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="relative min-h-screen bg-surface-secondary flex items-center justify-center p-4 overflow-hidden">
+      <InteractiveGridPattern
+        className={cn(
+          '[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]',
+          'inset-x-0 inset-y-[-30%] h-[200%] skew-y-12 text-text-muted'
+        )}
+      />
+
+      <div className="absolute top-4 right-4 z-20">
+        <AnimatedThemeToggler />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-xl mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-xl mb-4 shadow-lg shadow-primary/25">
             <Shield className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Finault</h1>
-          <p className="text-gray-500 mt-1">Dashboard with RBAC & Anomaly Detection</p>
+          <h1 className="text-2xl font-bold text-text">Finault</h1>
+          <p className="text-text-secondary mt-1">Finance Dashboard with RBAC & Anomaly Detection</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            {isRegister ? 'Create Account' : 'Sign In'}
-          </h2>
+        <Card className="relative overflow-hidden">
+          <ShineBorder shineColor={['#6366f1', '#a78bfa', '#818cf8']} />
+          <CardHeader>
+            <CardTitle>{isRegister ? 'Create Account' : 'Sign In'}</CardTitle>
+            <CardDescription>
+              {isRegister
+                ? 'Enter your details to create a new account'
+                : 'Enter your credentials to access your dashboard'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="mb-4 p-3 bg-danger/10 border border-danger/20 rounded-lg text-sm text-danger">
+                {error}
+              </div>
+            )}
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isRegister && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+            <form onSubmit={handleSubmit} className="grid gap-4">
+              {isRegister && (
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your full name"
+                    required
+                  />
+                </div>
+              )}
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
                   required
                 />
               </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                required
-              />
-              {isRegister && (
-                <p className="text-xs text-gray-400 mt-1">Min 8 chars, uppercase, number, special char</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-primary text-white py-2.5 rounded-lg font-medium text-sm hover:bg-primary-dark transition-colors disabled:opacity-50"
-            >
-              {submitting ? 'Please wait...' : isRegister ? 'Create Account' : 'Sign In'}
-            </button>
-          </form>
-
-          <div className="mt-4 text-center">
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                {isRegister && (
+                  <p className="text-xs text-text-muted">Min 8 chars, uppercase, number, special char</p>
+                )}
+              </div>
+              <Button type="submit" disabled={submitting} className="w-full">
+                {submitting ? 'Please wait...' : isRegister ? 'Create Account' : 'Sign In'}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="justify-center">
             <button
               onClick={() => { setIsRegister(!isRegister); setError(''); }}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-primary hover:underline cursor-pointer"
             >
-              {isRegister ? 'Already have an account? Sign in' : 'Need an account? Register'}
+              {isRegister ? 'Already have an account? Sign in' : "Need an account? Register"}
             </button>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
 
-        {/* Demo credentials */}
-        <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-          <p className="text-xs font-medium text-gray-500 mb-2">Quick Demo Login:</p>
-          <div className="flex gap-2">
-            {['admin', 'analyst', 'viewer'].map((role) => (
-              <button
-                key={role}
-                onClick={() => fillDemo(role)}
-                className="flex-1 px-3 py-1.5 text-xs font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors capitalize"
-              >
-                {role}
-              </button>
-            ))}
-          </div>
-        </div>
+        <Card className="mt-4">
+          <CardContent className="pt-4 pb-4">
+            <p className="text-xs font-medium text-text-muted mb-3">Quick Demo Login</p>
+            <div className="flex gap-2">
+              {(['admin', 'analyst', 'viewer'] as const).map((role) => (
+                <Button
+                  key={role}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fillDemo(role)}
+                  className="flex-1 capitalize"
+                >
+                  {role}
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

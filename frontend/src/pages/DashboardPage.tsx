@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import Header from '../components/layout/Header';
-import SummaryCards from '../components/dashboard/SummaryCards';
-import TrendChart from '../components/dashboard/TrendChart';
-import CategoryPie from '../components/dashboard/CategoryPie';
-import RecentActivity from '../components/dashboard/RecentActivity';
-import AnomalyAlerts from '../components/dashboard/AnomalyAlerts';
-import { dashboardApi, type DashboardSummary, type CategoryTotal, type TrendPoint, type Anomaly } from '../api/dashboard.api';
-import { useAuth } from '../context/AuthContext';
-import { useSocket } from '../context/SocketContext';
-import client from '../api/client';
+import Header from '@/components/layout/Header';
+import SummaryCards from '@/components/dashboard/SummaryCards';
+import TrendChart from '@/components/dashboard/TrendChart';
+import CategoryPie from '@/components/dashboard/CategoryPie';
+import RecentActivity from '@/components/dashboard/RecentActivity';
+import AnomalyAlerts from '@/components/dashboard/AnomalyAlerts';
+import { dashboardApi, type DashboardSummary, type CategoryTotal, type TrendPoint, type Anomaly } from '@/api/dashboard.api';
+import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
+import client from '@/api/client';
 
 export default function DashboardPage() {
   const { isAnalyst, isAdmin } = useAuth();
