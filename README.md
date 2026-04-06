@@ -66,17 +66,17 @@ Client Request
      │
      v
 ┌─────────────────────────────────────────────────────────────┐
-│                    MIDDLEWARE PIPELINE                        │
-│                                                              │
+│                    MIDDLEWARE PIPELINE                      │
+│                                                             │
 │  Helmet ──> CORS ──> JSON Parser ──> Logger ──> Rate Limit  │
 └─────────────────────────┬───────────────────────────────────┘
                           │
                           v
 ┌─────────────────────────────────────────────────────────────┐
-│                     ROUTE HANDLER                            │
-│                                                              │
+│                     ROUTE HANDLER                           │
+│                                                             │
 │  authenticate() ──> authorize(role) ──> validate(schema)    │
-│         │                  │                    │            │
+│         │                  │                    │           │
 │    Verify JWT        Check role            Parse & validate │
 │    Extract user      hierarchy             request body     │
 │    from token        + permissions         with Zod         │
@@ -84,22 +84,22 @@ Client Request
                           │
                           v
 ┌─────────────────────────────────────────────────────────────┐
-│              CONTROLLER ──> SERVICE ──> DATABASE             │
-│                                                              │
+│              CONTROLLER ──> SERVICE ──> DATABASE            │
+│                                                             │
 │  Parse request ──> Business logic ──> Prisma queries        │
-│  Format response    RBAC data scoping  PostgreSQL            │
-│                     Anomaly triggers                         │
-│                     WebSocket events                         │
+│  Format response    RBAC data scoping  PostgreSQL           │
+│                     Anomaly triggers                        │
+│                     WebSocket events                        │
 └─────────────────────────┬───────────────────────────────────┘
                           │
                           v
 ┌─────────────────────────────────────────────────────────────┐
-│                   RESPONSE FORMATTING                        │
-│                                                              │
+│                   RESPONSE FORMATTING                       │
+│                                                             │
 │  Success: { success: true, data: {...}, meta: {...} }       │
-│  Error:   { success: false, error: { code, message } }     │
-│                                                              │
-│  Unhandled errors caught by global errorHandler middleware   │
+│  Error:   { success: false, error: { code, message } }      │
+│                                                             │
+│  Unhandled errors caught by global errorHandler middleware  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -228,18 +228,18 @@ Transaction Created/Updated
          │
          v
    ┌─────────────────────────────────────────────┐
-   │         ANOMALY DETECTION ENGINE             │
-   │                                              │
-   │  ┌─────────────┐  ┌──────────┐  ┌────────┐ │
+   │         ANOMALY DETECTION ENGINE            │
+   │                                             │
+   │  ┌─────────────┐  ┌──────────┐  ┌────────┐  │
    │  │  Category    │  │Duplicate │  │Unusual │ │
    │  │  Spike       │  │Detection │  │Frequen.│ │
-   │  │             │  │          │  │        │ │
-   │  │ amount >    │  │ Same amt │  │ Daily  │ │
-   │  │ avg + 2*std │  │ + cat +  │  │ count  │ │
-   │  │ for this    │  │ type     │  │ > 3x   │ │
-   │  │ category    │  │ within   │  │ 30-day │ │
-   │  │             │  │ 5 min    │  │ avg    │ │
-   │  └──────┬──────┘  └────┬─────┘  └───┬────┘ │
+   │  │             │  │          │  │        │  │
+   │  │ amount >    │  │ Same amt │  │ Daily  │  │
+   │  │ avg + 2*std │  │ + cat +  │  │ count  │  │
+   │  │ for this    │  │ type     │  │ > 3x   │  │
+   │  │ category    │  │ within   │  │ 30-day │  │
+   │  │             │  │ 5 min    │  │ avg    │  │
+   │  └──────┬──────┘  └────┬─────┘  └───┬────┘  │
    │         │              │             │      │
    │         v              v             v      │
    │      ┌─────────────────────────────────┐    │
@@ -270,8 +270,8 @@ Bank SMS ──> Webhook ──> 7-Step Parser ──> Transaction ──> Anoma
     │       SMS PARSING PIPELINE        │
     │                                   │
     │  1. Detect type (debit/credit)    │
-    │  2. Extract amount (Rs/INR/₹)    │
-    │  3. Parse date (DD-Mon-YY, etc.) │
+    │  2. Extract amount (Rs/INR/₹)     │
+    │  3. Parse date (DD-Mon-YY, etc.)  │
     │  4. Identify merchant             │
     │  5. Extract reference ID          │
     │  6. Extract balance               │
@@ -302,7 +302,7 @@ curl -X POST http://localhost:3000/api/sms-ledger/webhook \
 
 ```
 ┌─────────────┐       ┌──────────────────┐       ┌─────────────┐
-│   users      │       │  transactions    │       │  anomalies  │
+│   users     │       │  transactions    │       │  anomalies  │
 ├─────────────┤       ├──────────────────┤       ├─────────────┤
 │ id          │──┐    │ id               │──┐    │ id          │
 │ email       │  │    │ amount (12,2)    │  │    │ transaction │
@@ -310,7 +310,7 @@ curl -X POST http://localhost:3000/api/sms-ledger/webhook \
 │ name        │  │    │ category         │  │    │ message     │
 │ role (enum) │  ├───>│ date             │  ├───>│ severity    │
 │ isActive    │  │    │ notes            │  │    │ metadata    │
-│ failedAttempts│ │    │ userId (FK)      │  │    │ isResolved  │
+│ failedAttempts││    │ userId (FK)      │  │    │ isResolved  │
 │ lockedUntil │  │    │ smsLogId (FK)    │  │    │ createdAt   │
 │ deletedAt   │  │    │ deletedAt        │  │    └─────────────┘
 │ createdAt   │  │    │ createdAt        │  │
@@ -318,7 +318,7 @@ curl -X POST http://localhost:3000/api/sms-ledger/webhook \
 └─────────────┘  │    └──────────────────┘  │
                  │                           │
 ┌─────────────┐  │    ┌──────────────────┐   │
-│refresh_tokens│  │    │    sms_logs      │   │
+│refresh_tokens│ │    │    sms_logs      │   │
 ├─────────────┤  │    ├──────────────────┤   │
 │ id          │  │    │ id               │───┘
 │ token (hash)│  │    │ rawMessage       │
